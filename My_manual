@@ -1,0 +1,532 @@
+---------------------------
+-- Извлечение одного столбца prod_name таблицы Products
+---------------------------
+select prod_name from Products;
+
+---------------------------
+-- Извлечение нескольких столбцов (prod_id, prod_name, prod_price) таблицы Products
+---------------------------
+select prod_id, prod_name, prod_price from Products;
+
+---------------------------
+-- Извлечение всех столбцов  таблицы Products
+---------------------------
+select * from Products;
+
+---------------------------
+-- Извлечение только уникальные значение столбца vend_id таблицы Products
+---------------------------
+select distinct vend_id from Products;
+select distinct vend_id, prod_price from Products;
+
+---------------------------
+-- Извлечение первые 5 строк столбца prod_name таблицы Products
+---------------------------
+select prod_name from Products fetch first 5 rows only;
+select prod_name from Products limit 5;
+
+---------------------------
+-- Извлечение 5 строк столбца prod_name, отсчёт от 4 строки таблицы Products.
+---------------------------
+select prod_name from Products limit 5 offset 4;
+
+---------------------------
+-- Использование комментариев.
+---------------------------
+select prod_name -- это комментарий
+from Products;
+
+/* select prod_name, vend_id
+from Products; */
+select prod_name from Products;
+
+---------------------------
+-- Сортировка по одному и по нескольким именам столбцов или по номеру столбцов.
+---------------------------
+select prod_name from Products order by prod_name;
+select prod_id, prod_price, prod_name from Products order by prod_price, prod_name;
+select prod_id, prod_price, prod_name from Products order by 2, 3;
+
+---------------------------
+-- Сортировка по убыванию.
+---------------------------
+select prod_id, prod_price, prod_name from Products order by prod_price desc;
+
+---------------------------
+-- Сортировка по убыванию, а так же по названию.
+---------------------------
+select prod_id, prod_price, prod_name from Products order by prod_price desc, prod_name;
+
+---------------------------
+-- Фильтрация данных. Извлечить те значения столбца prod_price, которые равны 3.49;
+---------------------------
+select prod_price, prod_name from Products where prod_price = 3.49;
+
+---------------------------
+-- Сравнение. Извлечить название товаров, стоимость которых не привышает 10 долларов;
+---------------------------
+select prod_price, prod_name from Products where prod_price < 10;
+
+---------------------------
+-- Сравнение. Извлечить название товаров, стоимость которых 10 или меньше;
+---------------------------
+select prod_price, prod_name from Products where prod_price <= 10;
+
+---------------------------
+-- Проверка на неравенство. Извлечить все товары, не изготовленные фирмой DLL01;
+---------------------------
+select vend_id, prod_price from Products where vend_id <> 'DLL01';
+select vend_id, prod_price from Products where vend_id != 'DLL01';
+
+---------------------------
+-- Сравнение с диапозоном; Извлечение всех товаров, цена которых выше 5 и ниже 10 долларов.
+---------------------------
+select prod_price, prod_name from Products where prod_price between 5 and 10;
+
+---------------------------
+-- Проверить столбцы на NULL. Извлечить список клиентов, у которых не указана почта.
+---------------------------
+select cust_name from Customers where cust_email is null;
+
+---------------------------
+-- Фильтрация по нескольким столбцам. Извлечьназвания и цены всех товаров, предлагаемых поставщиком DLL01 с ценой 4 доллара и меньше.
+---------------------------
+select prod_price, prod_name, prod_id from Products where vend_id = 'DLL01' and prod_price <=4;
+
+---------------------------
+-- Фильтрация по одному из условий. Извлечение названия и цены всех товаров, изготовленных хотя бы одним из указанных поставщиков.
+---------------------------
+select prod_price, prod_name from Products where vend_id = 'DLL01' or vend_id = 'BRS01';
+
+---------------------------
+-- Порядок обработки операторов. Если в запросе есть OR и AND, то сначало выполняется AND. Если есть скобки, то сначало выполняется то, что в скобках.
+-- Необходимо вывести список всех предлагаемых поставщиками DLL01 и BRS01 товары, цена которых 10 и выше.
+-- Используя логические операторы AND и OR с фильтром WHERE всегда используйте скобки, чтобы точно сгруппировать условия.
+---------------------------
+select prod_price, prod_name from Products where (vend_id = 'DLL01' or vend_id = 'BRS01') and prod_price >=10;
+
+---------------------------
+-- Оператор IN. Служит для указания диапозона условий. Извлекает все товары, предлагаемые поставщиками DLL01 и BRS01.
+---------------------------
+select prod_price, prod_name, vend_id from Products where vend_id IN ('DLL01', 'BRS01');
+
+---------------------------
+-- Оператор NOT. Отрицает все условия, следующие за ним. Извлекается список товаров, предлагаемых всеми поставщиками, кроме DLL01.
+---------------------------
+select prod_name, vend_id from Products where not vend_id = 'DLL01';
+select prod_name, vend_id from Products where vend_id <> 'DLL01';
+select prod_name, vend_id from Products where vend_id != 'DLL01';
+
+---------------------------
+-- Оператор LIKE. Метасимволы (символы, применяемые для поиска части значения).
+-- Поиск с иползованием метасимволов может применятся только в тектовых полях(строках).
+-- % - найти все вхождения любого символа.
+-- Найти все товары, название которых начинаетсясо слова Fish.
+-- Использование двух метасимволов. Найти все значения, содержащие текст bean bag в любом месте названия, независимо от кол-ва символов перед и после него.
+-- Если поле содержит  NULL, то % не позволит вывести такую строку.
+---------------------------
+select prod_name, prod_id from Products where prod_name LIKE 'Fish%';
+select prod_name, prod_id from Products where prod_name LIKE '%bean bag%';
+select prod_name from Products where prod_name LIKE 'F%y';
+
+---------------------------
+-- Метасимвол "знак подчеркивания" (_), один знак - один символ.
+-- Если в настройках ячейки стоит 33 максимальных символа, а по фату записано 20, то некоторые СУБД заполняют оставшиеся символы пробелами,
+поэтому в конце следующего примера стоит символ %, указывающия что после r могут быть ещё символы.
+---------------------------
+select prod_name, prod_id from Products where prod_name LIKE '__ inch teddy bear%';
+
+---------------------------
+-- Метасимвол "квадратные скобки" ([]). Служит для указания набора символов, каждый из которых должен совпадать с искомым значением в точно,
+указанном месте.
+-- Найти всех клиентов, имена которых начинаются на букву J или M.
+-- По выражению [JM] осуществляется поиск всех клиентов, имена которых начинаются на одну из указанных в скобках букв, но при этом учитывается
+только один символ.
+-- Найти всех клиентов, имена которых не начинаются на букву J или M.
+-- Наборы поддерживаются в MS SQL и MS Access.
+---------------------------
+select cust_contact from Customers where cust_contact LIKE '[JM]%'
+select cust_contact from Customers where cust_contact LIKE '^[JM]%'
+
+---------------------------
+-- Вычесляемые поля.
+-- Конкатенация - комбинирование значений(путем присоединения их друг к другу) для получения одного длинного значения.
+-- В зависимости от СУБД это + или ||.
+-- Необходимо создать отчёт по поставщику и указать его страну как часть его имени в ввиде имя (страна). Нужные данные хранятся в двух отдельных столбцах.
+-- Взяли значения из столбца vend_country, с помощью оператора || "приклеили" к этим значениям скобки (), далее взяли данные из столбца vend_name и приклеили
+к ним то что обработали раннее, т.е. значения столбца vend_country со скобками.
+ ---------------------------
+select vend_name || ' (' || vend_country || ')' from Vendors;
+
+---------------------------
+-- Функция RTRIM(). Отбрасывает все пробелы справа от указанного значения.
+-- Применяется не во всех СУБД.
+-- TRIM - обрезает строку слева и справа.
+-- LTRIM - удаляет левую часть строки.
+---------------------------
+select RTRIM(vend_name) || ' (' || RTRIM(vend_country) || ')' from Vendors;
+
+---------------------------
+-- Псевдонимы (AS) - альтернативное имя для поля или значения.
+-- Взяли данные со столбца vend_name, отбросили пробелы справа(если СУБД их показывает при выполнении запроса), взяли данные из столбца vend_country и отбросили пробелы
+справа, приклеили скобки, результат значений столбца vend_name склеили с результатом значений столбца vend_country, задали псевдоним для столбца - vend_title.
+---------------------------
+select RTRIM(vend_name) || ' ('|| RTRIM(vend_country) ||')' as vend_title from Vendors;
+
+---------------------------
+-- Выполнение математических вычислений.
+-- Извлечем все товары, относящиеся к заказу с номером 20008. item_price - цена за единицу товара, quantity - единиц товара в заказе.
+Необходимо узнать полную стоимость, для этого умножим цену за единицу на кол-во товара, столбец с результатом назовём expanded_price.
+---------------------------
+select prod_id, quantity, item_price, quantity * item_price as expanded_price from OrderItems where order_num = 20008;
+
+---------------------------
+-- Синтаксис функций в каждой СУБД отличается.
+-- Функции для работы с текстом
+-- Преобразуем символы в верхнийрегистр.
+---------------------------
+select vend_name, UPPER(vend_name) from Vendors;
+
+---------------------------
+-- Функция для работы с датой и временем.
+-- date_part( 'year', order_date ) извлечь из столбца order_date год ('year') с проверить равен ли он 2012.
+---------------------------
+select order_num from Orders where date_part( 'year', order_date ) = 2012;
+
+---------------------------
+-- Функция AVG()
+-- Определяет среднюю цену всех товаров в таблице Products.
+-- Определить среднюю цену товаров, предлагаемых поставщиком DLL01.
+-- Строки с NULL игнорируются.
+---------------------------
+select AVG (prod_price) from Products;
+select AVG (prod_price) from Products where vend_id = 'DLL01';
+
+---------------------------
+-- Функция COUNT().
+-- Подсчитывает число строк.
+-- Подсчитать клиентов, имеющих адреса электронной почты.
+-- Строки с NULL игнорируются функцией COUNT(), если указано имя столбца, и учитывается если используется звездочка(*)
+---------------------------
+select count(*) from Customers;
+select count(cust_email) from Customers;
+
+---------------------------
+-- Функция MAX().
+-- Возвращает цену самого дорогого товара в тиблице Products.
+-- Строки с NULL игнорируются.
+---------------------------
+select max(prod_price) from Products;
+
+---------------------------
+-- Функция MIN().
+-- Возвращает наименьшее значение в цказанном столбце.
+---------------------------
+select min(prod_price) from Products;
+
+---------------------------
+-- Функция SUM().
+-- Подсчитывает сумму стоимости всех товаров из заказа номер 20005.
+---------------------------
+select SUM(quantity) from OrderItems where order_num = 20005;
+select SUM(item_price*quantity) from OrderItems where order_num = 20005;
+
+---------------------------
+-- Итоговые вычисления для уникальных значений.
+-- Убрали повторяющиеся цены через distinct и далее высчитали их среднюю стоимость. 
+---------------------------
+select AVG(distinct prod_price) from Products where vend_id = 'DLL01';
+
+
+---------------------------
+-- Комбинирование итоговых функций.
+---------------------------
+select count(*), min(prod_price), max(prod_price), avg(prod_price) from Products;
+
+---------------------------
+-- Группировка данных.
+-- У поставщика(vend_id) есть некоторое кол-во предлагаемого товара, которое можно извлечь с помощью group by и count(*)
+---------------------------
+select vend_id, count(*) from Products group by vend_id;
+
+---------------------------
+-- Фильтрация по группам.
+-- Для групп вместо where используется having.
+-- Можно сочитать применение where и having. Предложение where фильтрует все строки со значениями в столбце prod_price не менее 4
+затем данные группируются по солбцу vend_id, после чего having фильтрует только группы, содержащие не менее двух членов.
+-- Отфильтровали по цене, оставили те товары, которые больше или равны 4 долларам, далее применили группировку по производителю, 
+тем сам выяснив кол-во предлагаемой продукции у каждого производителя, далее применили фильтр для группировки, вывели тех, у кого продукции предлагаемой продукции
+больше или равно 2.
+---------------------------
+select cust_id, count(*) from Orders group by cust_id having count(*) >= 2;
+select vend_id, count(*) from Products where prod_price >= 4 group by vend_id having count(*) >= 2;
+
+---------------------------
+-- Сортировка в группировке.
+---------------------------
+select order_num, count(*) as item from OrderItems group by order_num order by item;
+
+
+---------------------------
+-- Порядок предложений в инструкции select: select, from, where, group by, having, order by.
+---------------------------
+
+---------------------------
+-- Подзапросы.
+-- Необходимо получить список всех клиентов, которые заказали товар RGAN01. Для этого придётся делать запросы в 3 таблицах.
+-- Нежно: 1) извлечь номера всех заказов, содержащих товар RGAN01 2) Получить идентификаторы всех клиентов, которые сделали заказы 
+3) Извлечь информацию обо всех клиентах.
+-- Подзапрос всегда обрабатывается, начиная с самой внутренней инструкции select.
+-- Select в подзапросах могут возвращать только один столбец.
+---------------------------
+select cust_name, cust_contact from Customers where cust_id IN (select cust_id from Orders where order_num in (select order_num from OrderItems where prod_id = 'RGAN01'));
+
+---------------------------
+-- Использование подзапросов в качестве вычисляемых полей.
+-- Необходимо вывести общее количество заказов, сделанных каждым клиентом из таблицы Customers. Заказы хранятся в таб. Orders.
+-- Порядок: 1) извлечь список клиентов из таблицы Customers; 2) для каждого клиента подсчитать число его заказов в таблице Orders.
+-- select возвращает три стоблца для каждого клиента таблицы Customers: cust_name, cust_state, orders. Поле orders является вычисляемым, оно формируется
+в результате выполнения подзапроса, который заключен в круглые скобки. Подзапрос выполняется один раз для каждого выбранного клиента.
+Имеются два столбца cust_id, один в Customers, другой в Orders. Без использования полностью определенных имен столбцов СУБД будет считать, что вы 
+сравниваете поле cust_id в Orders с самим собой, чтобы этого избежать, необходимо указать Orders.cust_id = Customers.cust_id, иначе будет посчитано общее кол-во
+заказов, а не кол-во заказов кажого клиента в частности.
+---------------------------
+select cust_name, cust_state, (select count (*) from Orders where Orders.cust_id = Customers.cust_id) as orders from Customers order by cust_name;
+
+---------------------------
+-- Объединение таблиц.
+-- Извлекли столбы из вдух таблиц, за счёт соединения по ключевым полям связанных таблиц.
+---------------------------
+select vend_name, prod_name, prod_price from Vendors, Products where Vendors.vend_id = Products.vend_id;
+
+---------------------------
+-- Внетреннее объединение. Inner join.
+-- Указываются таблицы, которые нужно объединить и по каким полям они будут объединятся.
+---------------------------
+select vend_name, prod_name, prod_price from Vendors inner join Products on Vendors.vend_id = Products.vend_id;
+
+---------------------------
+-- Объединение нескольких таблиц.
+-- выводятся элементы заказа номер 20007, для этого нужно объединить по ключевым полям две таблицы.
+-- Большое кол-во объединений влияет на производительность.
+---------------------------
+select vend_name, prod_name, prod_price, quantity from OrderItems, Products, Vendors where Vendors.vend_id = Products.vend_id and OrderItems.prod_id = Products.prod_id and order_num = 20007;
+
+---------------------------
+-- Псевдонимы таблиц.
+---------------------------
+select cust_name, cust_contact from Customers AS C, Orders AS O, OrderItems AS OI where C.cust_id = O.cust_id and OI.order_num = O.order_num and prod_id = 'RGAN01'
+
+---------------------------
+-- Самообъединение.
+-- Внутренняя инструкция select возвращает название компании (cust_name), с которой работает Джим Джонс. Далее это название используется
+ в предложении where внешнего запроса, благодаря чему извлекаются имена всех служащих, работающих с данной компанией.
+---------------------------
+select cust_name, cust_contact, cust_id from Customers where cust_name = (select cust_name from Customers where cust_contact = 'Jim Jones');
+альтернативный вариант:
+select c1.cust_id, c1.cust_name, c1.cust_contact from Customers AS c1, Customers AS c2 where c1.cust_name = c2.cust_name and c2.cust_contact = 'Jim Jones';
+
+---------------------------
+-- Естественное объединение - в котором извлекаются только не повторяющиеся столбцы.
+-- Объединяем три таблицы, по ключевым полям, фильтруем в OrderItems по RGAN01, выводим все столбцы таблицы Customers + столбцы из таблицы Orders (order_num, order_date) + столбцы из таблицы OrderItems (prod_id, quantity, item_price)
+---------------------------
+select C.*,  O.order_num, O.order_date, OI.prod_id, OI.quantity, OI.item_price from Customers as C, Orders as O, OrderItems as OI where C.cust_id = O.cust_id and OI.order_num = O.order_num and prod_id = 'RGAN01';
+
+
+---------------------------
+-- Внешние объединения(включить в результат строки, не имеющие пар.)
+-- Например подсчитать количество заказов каждого клиента, включая клиентов, которые ещё не сделали заказ.
+-- Первый пример - простое внутреннее объединение.
+-- Второй пример - получим имена всех клиентов, включая тех, которые ещё не сделали заказов.
+-- left outer join - для извлечения всех строк таблицы, указанной в левой части предложения from;
+-- right outer join - для извлечения всех строк таблицы, указанной в правой части предложения from;
+-- full outer join - полное внешнеелбъединение, включает в результат несвязанные строки из обеих таблиц.
+---------------------------
+select Customers.cust_id, Orders.order_num from Customers inner join Orders On Customers.cust_id = Orders.cust_id;
+select Customers.cust_id, Orders.order_num from Customers left outer join Orders On Customers.cust_id = Orders.cust_id;
+
+
+---------------------------
+-- Использование объединений совместно с итоговыми функциями.
+-- Необходимо получить список всех клиентов и число сделанных ими заказов.
+-- Связали две талицы по полям Customers.cust_id = Orders.cust_id, сложили заказы и вывели.
+-- Второй пример - за счёт left outer join выведит даже тех, у кого 0 заказов.
+---------------------------
+select Customers.cust_id, count (Orders.order_num) as num_ord from Customers inner join Orders on Customers.cust_id = Orders.cust_id group by Customers.cust_id;
+select Customers.cust_id, count (Orders.order_num) as num_ord from Customers  left outer join Orders on Customers.cust_id = Orders.cust_id group by Customers.cust_id;
+
+---------------------------
+-- Комбинированные запросы. Оператор union.
+-- Оператор union автоматически удаляет все повторяющиеся строки из набора результатов.
+-- Первый select извлекает все строки, относящиеся к перчисленным в скобках штатам, второй select проверяет на равенсто все вхождения 
+клиента Fun4All. Далее через union два этих результата объединяются.
+-- Каждый select должен содержать одни и те же столбцы, выражения или итоговые функции. Типы данных столбцов должны быть совместными.
+-- При использовании union all СУБД не удаляет дубликаты в результате.
+-- Сортировка (order by) может примется только один раз и только после последнего select, сортироватся будет результат всех select.
+---------------------------
+select cust_name, cust_contact, cust_email from Customers where cust_state in ('IL', 'IN', 'MI')
+union
+select cust_name, cust_contact, cust_email from Customers where cust_name = 'Fun4All'
+
+select cust_name, cust_contact, cust_email from Customers where cust_state in ('IL', 'IN', 'MI')
+union
+select cust_name, cust_contact, cust_email from Customers where cust_name = 'Fun4All'
+order by cust_name, cust_contact;
+
+
+---------------------------
+-- Добавление строк в таблицу. Insert.
+-- Второй вариант, тоже самое но более безопасный.
+-- Добавление части строки допускается, если это допускается определениум таблицы, т.е. столбец может принимать значение NULL. Третий пример.
+---------------------------
+insert into Customers values
+('1000000006',
+'Toy Land',
+'123 Any Street',
+'New York',
+'NY',
+'11111',
+'USA',
+NULL,
+NULL);
+
+insert into Customers
+(cust_id, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country, cust_contact, cust_email)
+values
+('1000000006', 'Toy Land', '123 Any Street', 'New York', 'NY', '11111', 'USA', NULL, NULL);
+
+insert into Customers
+(cust_id, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
+values
+('1000000006', 'Toy Land', '123 Any Street', 'New York', 'NY', '11111', 'USA');
+
+
+---------------------------
+-- Копирование данных из одной таблицы в другую. into
+-- Создаётся новая таблица CustCopy и копирует в нее всё содержимое таблицы Customers.
+-- Данные можно добавить только в одну таблицу, независимо от того, из скольких таблиц они были извлечены.
+---------------------------
+select * into CustCopy from Customers;
+
+---------------------------
+-- Обновление и удаление данных. Update, delete.
+-- Обновить (модифицировать) можно определенные строки в таблице либо все строки в таблице.
+-- Пример, у клиента 1000000005 появился адрес электронной почты. Set - ввод в столбец нового значения.
+-- Пример 2, обновление нескольких столбцов.
+-- Пример 3, удаление строки. Будет удалена строка, относящаяса к клиенту 1000000006.
+-- Для удаления всех строк из таблицы используется иструкция truncate.
+---------------------------
+update Customers set cust_email = 'kim@store.com' where cust_id = '1000000005';
+update Customers set cust_contact = 'Sam Roberts', cust_email = 'asm@store.com' where cust_id = '1000000006'; 
+delete from Customers where cust_id = '1000000006';
+
+
+---------------------------
+-- Создание таблиц.
+-- "prod_desc	varchar(1000)	null", и "prod_desc	varchar(1000)	," - одно и тоже.
+---------------------------
+create table Products2
+(
+prod_id		char(10)	not null,
+vend_id		char(10)	not null,
+prod_name	char(254)	not null,
+prod_price	decimal(8,2)	not null,
+prod_desc	varchar(1000)	null
+);
+
+
+---------------------------
+-- Оперделение значений по умолчанию.
+-- В столбце quantity по умолчанию будет выставлена 1, если не указано иное.
+---------------------------
+create table OrderItems2
+(
+order_num	integer		not null,
+order_item	integer		not null,
+prod_id		char(10)	not null,
+quantity	integer		not null	default 1,
+item_price	decimal(8,2)	not null
+);
+
+---------------------------
+-- Добавление столбцов в таблицу.
+-- Удаление столбца в таблице.
+-- Удаление таблицы.
+---------------------------
+alter table Vendors add vend_phone char(20);
+alter table Vendors drop column vend_phone;
+drop table CustCopy;
+
+
+---------------------------
+-- Представления - виртуальная таблица, которая содержит в себе готовый запрос для извлечения данных.
+-- Создали представление ProductCustomers, которое объединяет три таблицы для получения списка клиентов, заказавших какой нибудь товар. Далее этот же запрос
+можно вызвать через созданное представление: select * from ProductCustomers;
+-- Во втором примере извлекаются данные из представления.
+---------------------------
+create view ProductCustomers as
+select cust_name, cust_contact, prod_id from Customers, Orders, OrderItems where Customers.cust_id = Orders.cust_id and OrderItems.order_num = Order.order_num;
+
+select cust_name, cust_contact from ProductCustomers where prod_id = 'RGAN01';
+
+
+---------------------------
+-- Процедуры - набор из нескольких инструкций, сохраненный для последующего выполнения.
+-- Выполняется процедура добавления нового товара в таблицу Products.
+---------------------------
+execute AddNewProducts(
+'JTS01',
+'Stuffed',
+'6.49',
+'Plush stuffed');
+
+---------------------------
+-- Создание хранимых процедур. Непонятная хуета, пропускаем.
+---------------------------
+
+
+---------------------------
+-- Транзакции - процесс добавления данных, например последовательно в несколько таблиц. Транзакцию можно откатить.
+-- В транзакциях можно задействовать insert, update, delete.
+-- Нельзя отменить действия select, create, drop.
+-- В некоторых СУБД требуется, чтобы пользователь явно пометил начало и конец каждой транзакции.
+-- Инструкция roolback предназначена для отката запроса, первый пример.
+---------------------------
+DROP TABLE customers CASCADE;
+ROLLBACK;
+
+---------------------------
+-- Инструкция commit.
+-- Фиксация изменения происходит только если не произошло ни каких ошибок.
+---------------------------
+-- начало транзакции
+begin;
+-- выполнение операции удаления
+DELETE FROM OrderItems where order_num = 12345;
+-- выполнение операции удаления
+DELETE FROM Orders where order_num = 12345;
+-- конец транзакии, фиксация изменений.
+commit;
+
+
+---------------------------
+-- Точки сохранения. Существуюет для отмены части транзакции. Если транзакция большая, то часть можно сохранить, чтоб не откатывать целиком.
+Для этого необходимо ставить метки savepoint delete1.
+-- Для отмены всех инструкций после этой точки: ROLLBACK TO SAVEPOINT delete1;
+---------------------------
+-- начало транзакции
+begin;
+-- выполнение операции удаления
+DELETE FROM OrderItems where order_num = 12345;
+-- точка сохранения
+SAVEPOINT delete1;
+-- выполнение операции удаления
+DELETE FROM Orders where order_num = 12345;
+-- Откат до точки сохранения
+ROLLBACK TO SAVEPOINT delete1;
+-- конец транзакии, фиксация изменений.
+commit;
+
+---------------------------
+-- Курсоры, даёт возможно просмотреть строки в прямом или обратном продяке по одной или по нескольку строк за раз.
+---------------------------
